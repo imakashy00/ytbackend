@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 import uvicorn
 import os
 from dotenv import load_dotenv
-from database import get_db,Users
+from api.database import get_db,Users
 
 load_dotenv()
 origin = os.getenv('ORIGIN')
