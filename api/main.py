@@ -4,12 +4,17 @@ from pydantic import BaseModel, EmailStr
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import uvicorn
+import os
+from dotenv import load_dotenv
 from database import get_db,Users
+
+load_dotenv()
+origin = os.getenv('ORIGIN')
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = ['http://localhost:3000'],
+    allow_origins = origin,
     allow_credentials = True,
     allow_methods = ['*'],
     allow_headers = ['*']
@@ -68,9 +73,12 @@ async def register(email:UserEmail,db:Session = Depends(get_db)):
 
 
 if __name__ == '__main__':
+    port = int(os.getenv('PORT', 8000) )
     uvicorn.run(
         app,
-        reload=True,
+        # reload=True,
+        workers=4,
         host='0.0.0.0',
-        port=8000
+        port=port,
+         log_level='info'
         )
