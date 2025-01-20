@@ -10,6 +10,7 @@ from database import get_db,Users
 
 load_dotenv()
 origin = os.getenv('ORIGIN')
+host = os.getenv('HOST')
 app = FastAPI()
 
 app.add_middleware(
@@ -78,7 +79,7 @@ if __name__ == '__main__':
         app,
         # reload=True,
         workers=4,
-        host='0.0.0.0',
+        host=host,
         port=port,
          log_level='info'
         )
