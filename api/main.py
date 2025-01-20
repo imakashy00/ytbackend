@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr
@@ -10,12 +11,13 @@ from api.database import get_db,Users
 
 load_dotenv()
 origin = os.getenv('ORIGIN')
+origins: List[str] = origin.split(',') if origin else ["https://ytnotes.co"]
 host = os.getenv('HOST')
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = [origin],
+    allow_origins = origins,
     # allow_origins = ['*'],
     allow_credentials = True,
     allow_methods = ['*'],
