@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,11 +17,10 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = origins,
-    # allow_origins = ['*'],
-    # allow_credentials = True,
-    allow_methods = ['*'],
-    allow_headers = ['*']
+    allow_origins=origins,
+    allow_methods=["GET", "POST", "OPTIONS"],  # Explicitly allow OPTIONS
+    allow_headers=["Content-Type"],
+    allow_credentials=False  # Since you're not using credentials
 )
 
 class UserEmail(BaseModel):
@@ -31,6 +30,17 @@ class WaitlistResponse(BaseModel):
     message:str
     status:str
 
+
+print(f"Configured origins: {origins}")
+# In your FastAPI app, add this at startup:
+print("Environment variables:")
+print(f"ORIGIN: {os.getenv('ORIGIN')}")
+print(f"HOST: {os.getenv('HOST')}")
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    print(f"Incoming request from origin: {request.headers.get('origin')}")
+    response = await call_next(request)
+    return response
 
 @app.post('/register',response_model=WaitlistResponse)
 async def register(email:UserEmail,db:Session = Depends(get_db)):
